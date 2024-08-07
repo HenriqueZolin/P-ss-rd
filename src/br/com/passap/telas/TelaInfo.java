@@ -7,6 +7,8 @@ package br.com.passap.telas;
 import javax.swing.JOptionPane;
 import java.sql.*;
 import br.com.passapp.dao.ModuloConexao;
+import java.awt.Color;
+import java.awt.Toolkit;
 /**
  *
  * @author henri
@@ -25,6 +27,8 @@ public class TelaInfo extends javax.swing.JFrame {
         initComponents();
         conexao = ModuloConexao.conector();
         lblId.setVisible(false);
+        getContentPane().setBackground(Color.getHSBColor(0, 0, (float) 0.3));
+        this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/br/com/passapp/icones/Icone-logo.png")));
     }
     
     private void remover(){
@@ -97,9 +101,13 @@ public class TelaInfo extends javax.swing.JFrame {
         btnAtualizar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
+
+        txtDescricao.setHorizontalAlignment(javax.swing.JTextField.LEFT);
 
         btnMostrarSenha.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/passapp/icones/visible.png"))); // NOI18N
         btnMostrarSenha.setToolTipText("Mostrar Senha");
+        btnMostrarSenha.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnMostrarSenha.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnMostrarSenhaActionPerformed(evt);
@@ -107,6 +115,7 @@ public class TelaInfo extends javax.swing.JFrame {
         });
 
         btnExcluir.setText("Excluir");
+        btnExcluir.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnExcluir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnExcluirActionPerformed(evt);
@@ -115,6 +124,7 @@ public class TelaInfo extends javax.swing.JFrame {
 
         btnAtualizar.setText("Atualizar dados");
         btnAtualizar.setToolTipText("");
+        btnAtualizar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAtualizar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAtualizarActionPerformed(evt);

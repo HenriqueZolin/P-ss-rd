@@ -7,6 +7,8 @@ package br.com.passap.telas;
 
 import java.sql.*;
 import br.com.passapp.dao.ModuloConexao;
+import java.awt.Color;
+import java.awt.Toolkit;
 import static java.lang.Math.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,8 @@ public class TelaAdicionar extends javax.swing.JFrame {
     public TelaAdicionar() {
         initComponents();
         conexao = ModuloConexao.conector();
+        getContentPane().setBackground(Color.getHSBColor(0, 0, (float) 0.3));
+        this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/br/com/passapp/icones/Icone-logo.png")));
     }
     
     private void adicionar(){
@@ -140,6 +144,8 @@ public class TelaAdicionar extends javax.swing.JFrame {
         lblId = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Adicionar Conta");
+        setResizable(false);
 
         txtNome.setToolTipText("Título desta conta");
 
@@ -151,14 +157,19 @@ public class TelaAdicionar extends javax.swing.JFrame {
             }
         });
 
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Titulo da conta");
 
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Usuario");
 
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Senha");
 
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("<html>email atribuido <br>a conta </html>");
 
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("Descrição");
 
         jButton1.setText("Adicionar conta");
@@ -174,6 +185,11 @@ public class TelaAdicionar extends javax.swing.JFrame {
                 jButton2ActionPerformed(evt);
             }
         });
+
+        lblNomeUser.setForeground(new java.awt.Color(255, 255, 255));
+        lblNomeUser.setToolTipText("");
+        lblNomeUser.setAlignmentX(1.0F);
+        lblNomeUser.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -197,16 +213,15 @@ public class TelaAdicionar extends javax.swing.JFrame {
                             .addComponent(jButton2)
                             .addComponent(txtSenha, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(lblNomeUser, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(39, 39, 39))
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtMostraSenha, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblId))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(lblId)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(56, 56, 56)
+                        .addComponent(lblNomeUser, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 24, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
