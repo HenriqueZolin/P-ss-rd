@@ -50,8 +50,8 @@ public class TelaRegister extends javax.swing.JFrame {
                     txtEmail.getText().isEmpty()){
                 JOptionPane.showMessageDialog(null, "Preencha todos os campos!");
             }else{
-                if(txtSenha.getText().equals(txtSenhaConta.getText())){
-                    JOptionPane.showMessageDialog(null, "As senhas tem que ser diferentes!");
+                if(verificarEntradas() == false){
+                    JOptionPane.showMessageDialog(null, "Preencha os dados corretamente");
                 }else{
                     int adicionado = pst.executeUpdate();
                     
@@ -67,6 +67,58 @@ public class TelaRegister extends javax.swing.JFrame {
             
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+        }
+    }
+    
+    private boolean verificarEntradas(){
+        
+        String login = txtLogin.getText();
+        String senha = txtSenha.getText();
+        String senhaDeApp = txtSenhaConta.getText();
+        
+        if(verificaUser(login) == false){
+            JOptionPane.showMessageDialog(null, "Usuário Inválido");
+            return false;
+        }else{
+            return verificaSenha(senha, senhaDeApp);
+        }
+    }
+    
+    private boolean verificaUser(String user){
+        if(user.isBlank()){
+            return false;
+        }else{
+            if(user.contains(" ") ||
+                    user.length()<6 ||
+                    user.contains("|") ||
+                    user.contains("*") ||
+                    user.contains("+") ||
+                    user.contains("&") ||
+                    user.contains("(") ||
+                    user.contains("%")){
+                return false;
+            }else{
+                return true;
+            }
+        }
+    }
+    
+    private boolean verificaSenha(String senha1, String senha2){
+        String pattern = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}";
+        if(senha1.equals(senha2)){
+            JOptionPane.showMessageDialog(null, "As senhas tem que ser diferentes!");
+            return false;
+        }else{
+            if(senha1.isBlank() || senha2.isBlank()){
+                return false;
+            }else{
+                if(senha1.matches(pattern)){
+                    return true;
+                }else{
+                    JOptionPane.showMessageDialog(null, "Critérios de criação de senha não atendidos!");
+                    return false;
+                }
+            }
         }
     }
 
@@ -94,6 +146,7 @@ public class TelaRegister extends javax.swing.JFrame {
         txtSenha = new javax.swing.JPasswordField();
         txtSenhaConta = new javax.swing.JPasswordField();
         jLabel9 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Registre-se");
@@ -131,6 +184,14 @@ public class TelaRegister extends javax.swing.JFrame {
 
         jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/passapp/icones/Logo PassApp_resized.png"))); // NOI18N
 
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/passapp/icones/return.png"))); // NOI18N
+        jButton1.setToolTipText("Voltar para o Login");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -140,16 +201,18 @@ public class TelaRegister extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(20, 20, 20)
-                                .addComponent(jLabel7))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(55, 55, 55)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel1)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel6)))
-                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGap(20, 20, 20)
+                                    .addComponent(jLabel7))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGap(55, 55, 55)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jLabel1)
+                                        .addComponent(jLabel2)
+                                        .addComponent(jLabel6)))
+                                .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING))
+                            .addComponent(jButton1))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -200,9 +263,15 @@ public class TelaRegister extends javax.swing.JFrame {
                     .addComponent(jLabel7))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel8)
-                .addGap(85, 85, 85)
-                .addComponent(btnCadastro, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(31, 31, 31))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(85, 85, 85)
+                        .addComponent(btnCadastro, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(31, 31, 31))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton1)
+                        .addGap(16, 16, 16))))
         );
 
         pack();
@@ -213,6 +282,19 @@ public class TelaRegister extends javax.swing.JFrame {
         // TODO add your handling code here:
         realizarCadastro();
     }//GEN-LAST:event_btnCadastroActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        TelaLogin telaLogin = new TelaLogin();
+        telaLogin.setVisible(true);
+        this.dispose();
+        try {
+            conexao.close();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -251,6 +333,7 @@ public class TelaRegister extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCadastro;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
