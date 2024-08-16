@@ -9,9 +9,6 @@ import java.sql.*;
 import br.com.passapp.dao.ModuloConexao;
 import java.awt.Color;
 import java.awt.Toolkit;
-import static java.lang.Math.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import javax.swing.JOptionPane;
 
@@ -41,6 +38,9 @@ public class TelaAdicionar extends javax.swing.JFrame {
         String sql = "insert into tbcontas(titulo,usuario,senha,email,descricao,idcli) values(?,?,?,?,?,?)";
         
         try {
+            
+            //ADICIONAR CRIPTOGRAFIA DE LOGIN E SENHA E DESCRIPTOGRAFAR DPS
+            
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtNome.getText());
             pst.setString(2, txtUsuario.getText());

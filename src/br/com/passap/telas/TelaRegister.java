@@ -14,6 +14,7 @@ import br.com.passapp.dao.ModuloConexao;
 import java.awt.Color;
 import java.awt.Toolkit;
 import javax.swing.JOptionPane;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class TelaRegister extends javax.swing.JFrame {
 
@@ -36,9 +37,15 @@ public class TelaRegister extends javax.swing.JFrame {
         String sql = "insert into tbusuarios(login,senha,dica,senhaConta,email) value(?,?,?,?,?)";
         
         try {
+            
+            //NAO CONSEGUI APLICAR HASH NO LOGIN
+            
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtLogin.getText());
-            pst.setString(2, txtSenha.getText());
+            
+            String hashedSenha = BCrypt.hashpw(txtSenha.getText(), BCrypt.gensalt());
+            
+            pst.setString(2, hashedSenha);
             pst.setString(3, txtDica.getText());
             pst.setString(4, txtSenhaConta.getText());
             pst.setString(5, txtEmail.getText());
@@ -61,6 +68,11 @@ public class TelaRegister extends javax.swing.JFrame {
                         telaLogin.setVisible(true);
                         this.dispose();
                         conexao.close();
+                        if (rs != null) {
+                            rs.close();
+                        }
+                        if (pst != null)
+                            pst.close();
                     }
                 }
             }
@@ -290,6 +302,11 @@ public class TelaRegister extends javax.swing.JFrame {
         this.dispose();
         try {
             conexao.close();
+            if (rs != null) {
+                rs.close();
+            }
+            if (pst != null)
+                pst.close();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }

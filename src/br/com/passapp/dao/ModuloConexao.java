@@ -4,7 +4,13 @@
  */
 package br.com.passapp.dao;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.sql.*;
+import java.util.Properties;
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.jasypt.properties.EncryptableProperties;
 
 /**
  *
@@ -14,12 +20,21 @@ public class ModuloConexao {
     public static Connection conector() {
         java.sql.Connection conexao = null;
         //chamar o driver importado para bibliotecas
-        String driver = "com.mysql.cj.jdbc.Driver";
-        String url = "jdbc:mysql://localhost:3306/dbpassapp";
-        String user = "root";
-        String password = "Dba@123456";
 
         try {
+            String driver = "com.mysql.cj.jdbc.Driver";
+
+            //ADICIONAR DADOS EM UM .PROPERTIES
+            StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+            encryptor.setPassword("hzm0101");
+
+            Properties props = new EncryptableProperties(encryptor);
+            props.load(new FileInputStream("src/br/com/passapp/dao/values.properties"));
+            
+            String url = props.getProperty("datasource.url");
+            String user = props.getProperty("datasource.username");
+            String password = props.getProperty("datasource.password");
+            
             //ligar banco de dados co o java
             Class.forName(driver);
             conexao = DriverManager.getConnection(url, user, password);

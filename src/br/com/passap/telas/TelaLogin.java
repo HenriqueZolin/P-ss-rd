@@ -12,6 +12,7 @@ import java.awt.Toolkit;
 import javax.swing.JOptionPane;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.SimpleEmail;
+import org.mindrot.jbcrypt.BCrypt;
 
 /**
  *
@@ -24,24 +25,32 @@ public class TelaLogin extends javax.swing.JFrame {
     ResultSet rs = null;
         
     public void logar(){
-        String sql = "select * from tbusuarios where login=? and senha=?";
+        String sql = "select * from tbusuarios where login=?";
         
         try {
             pst = conexao.prepareStatement(sql);
             
             pst.setString(1, txtLogin.getText());
-            pst.setString(2, txtSenha.getText());
             
             rs = pst.executeQuery();
             
             if(rs.next()){
                 
-                TelaPrincipal telaPrincipal = new TelaPrincipal(txtLogin.getText());
-                telaPrincipal.setVisible(true);
-                this.dispose();
-                conexao.close();
-                if (rs != null) rs.close();
-                if (pst != null) pst.close();
+                String hashedSenha = rs.getString(3);
+                
+                if (BCrypt.checkpw(txtSenha.getText(), hashedSenha)){
+                    TelaPrincipal telaPrincipal = new TelaPrincipal(txtLogin.getText());
+                    telaPrincipal.setVisible(true);
+                    this.dispose();
+                    conexao.close();
+                    if (rs != null) {
+                        rs.close();
+                    }
+                    if (pst != null)
+                        pst.close();
+                }else{
+                    JOptionPane.showMessageDialog(null, "Usuaário e/ou senha incorreto(s)");
+                }
             }else{
                 JOptionPane.showMessageDialog(null, "Usuaário e/ou senha incorreto(s)");
             }
