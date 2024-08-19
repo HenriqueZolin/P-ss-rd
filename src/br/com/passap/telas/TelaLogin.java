@@ -9,9 +9,14 @@ import java.sql.*;
 import br.com.passapp.dao.ModuloConexao;
 import java.awt.Color;
 import java.awt.Toolkit;
+import java.io.*;
+import java.util.Properties;
+import java.util.logging.*;
 import javax.swing.JOptionPane;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.SimpleEmail;
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.jasypt.properties.EncryptableProperties;
 import org.mindrot.jbcrypt.BCrypt;
 
 /**
@@ -198,17 +203,34 @@ public class TelaLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRegisterActionPerformed
 
     private void btnEsqueciSenhaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEsqueciSenhaActionPerformed
-        // TODO add your handling code here:
-        enviarEmail();
+        try {
+            // TODO add your handling code here:
+            enviarEmail();
+        } catch (IOException ex) {
+            Logger.getLogger(TelaLogin.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnEsqueciSenhaActionPerformed
     
-    private void enviarEmail(){
+    private void enviarEmail() throws IOException{
         
         int confirma = JOptionPane.showConfirmDialog(null, "Te enviaremos um email com a dica de sua senha", "Atenção", JOptionPane.YES_NO_OPTION);
         if(confirma == JOptionPane.YES_OPTION){
             String sql = "select * from tbusuarios where login=?";
-            String meuemail = "passwrdapp1@gmail.com";
-            String minhaSenha = "senhaDeApp";
+            
+            StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+            encryptor.setPassword("chave1234");
+            
+            Properties props = new EncryptableProperties(encryptor);
+            
+            String meuemail = "";
+            String minhaSenha  = "";          
+            try {
+                props.load(new FileInputStream("src/br/com/passapp/dao/values.properties"));
+                meuemail = props.getProperty("email.username");
+                minhaSenha = props.getProperty("email.password");
+            } catch (FileNotFoundException e) {
+                JOptionPane.showMessageDialog(null, "Erro ao encontrar usuário");
+            }
 
             System.setProperty("mail.smtp.ssl.protocols", "TLSv1.2");
 

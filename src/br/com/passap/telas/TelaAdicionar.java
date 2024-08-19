@@ -12,6 +12,14 @@ import java.awt.Toolkit;
 import java.util.Random;
 import javax.swing.JOptionPane;
 
+import com.google.crypto.tink.Aead;
+import com.google.crypto.tink.*;
+import com.google.crypto.tink.aead.AeadConfig;
+import com.google.crypto.tink.aead.AeadKeyTemplates;
+import java.io.File;
+import java.util.Base64;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author henri
@@ -26,12 +34,37 @@ public class TelaAdicionar extends javax.swing.JFrame {
     PreparedStatement pst = null;
     ResultSet rs = null;
     int estado = 0;
+    String keysetFilename = "src/keyset.json";
+    Aead aead;
     
-    public TelaAdicionar() {
+    public TelaAdicionar() throws Exception{
         initComponents();
         conexao = ModuloConexao.conector();
+        
+        AeadConfig.register();
+        File keysetFile = new File(keysetFilename);
+        KeysetHandle keysetHandle;
+        
+        if (keysetFile.exists()) {
+            // Carregar a chave do arquivo existente
+            keysetHandle = CleartextKeysetHandle.read(JsonKeysetReader.withFile(keysetFile));
+        } else {
+            // Gerar uma nova chave se o arquivo não existir
+            keysetHandle = KeysetHandle.generateNew(AeadKeyTemplates.AES256_GCM);
+            // Salvar a nova chave no arquivo
+            CleartextKeysetHandle.write(keysetHandle, JsonKeysetWriter.withFile(keysetFile));
+        }
+        
+        aead = keysetHandle.getPrimitive(Aead.class);
+        
         getContentPane().setBackground(Color.getHSBColor(0, 0, (float) 0.3));
         this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/br/com/passapp/icones/Icone-logo.png")));
+    }
+    
+    public String criptografar(String texto) throws Exception {
+        byte[] cipherText = aead.encrypt(texto.getBytes(), null);
+        //FUNCIONA System.out.println(cipherText + " chipher text");
+        return Base64.getEncoder().encodeToString(cipherText);
     }
     
     private void adicionar(){
@@ -40,11 +73,13 @@ public class TelaAdicionar extends javax.swing.JFrame {
         try {
             
             //ADICIONAR CRIPTOGRAFIA DE LOGIN E SENHA E DESCRIPTOGRAFAR DPS
+            String usuarioCriptografado = criptografar(txtUsuario.getText());
+            String senhaCriptografada = criptografar(txtSenha.getText());
             
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtNome.getText());
-            pst.setString(2, txtUsuario.getText());
-            pst.setString(3, txtSenha.getText());
+            pst.setString(2, usuarioCriptografado);
+            pst.setString(3, senhaCriptografada);
             pst.setString(4, txtEmail.getText());
             pst.setString(5, txtDescricao.getText());
             pst.setString(6, lblId.getText());
@@ -340,7 +375,11 @@ public class TelaAdicionar extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new TelaAdicionar().setVisible(true);
+                try {
+                    new TelaAdicionar().setVisible(true);
+                } catch (Exception ex) {
+                    Logger.getLogger(TelaAdicionar.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }

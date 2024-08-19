@@ -17,6 +17,14 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 
+import com.google.crypto.tink.Aead;
+import com.google.crypto.tink.CleartextKeysetHandle;
+import com.google.crypto.tink.KeysetHandle;
+import com.google.crypto.tink.aead.AeadConfig;
+import com.google.crypto.tink.*;
+import java.io.File;
+import java.util.Base64;
+
 /**
  *
  * @author henri
@@ -26,6 +34,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
+    private Aead aead;
     
     /**
      * Creates new form TelaPrincipal
@@ -34,9 +43,29 @@ public class TelaPrincipal extends javax.swing.JFrame {
         initComponents();
         conexao = ModuloConexao.conector();
         lblNome.setText(nome);
+        String keysetFilename = "src/keyset.json";
+        
+        try {
+            // Initialize Tink
+            AeadConfig.register();
+
+            // Create or load the keyset
+            KeysetHandle keysetHandle = CleartextKeysetHandle.read(JsonKeysetReader.withFile(new File(keysetFilename)));
+            aead = keysetHandle.getPrimitive(Aead.class);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Erro inesperado!");
+            this.dispose();
+        }
+        
         atualizarDisplay();
         getContentPane().setBackground(Color.getHSBColor(0, 0, (float) 0.2));
         this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/br/com/passapp/icones/Icone-logo.png")));
+    }
+    
+    private String descriptografar(String cipherText) throws Exception {
+        byte[] cipherTextBytes = Base64.getDecoder().decode(cipherText);
+        byte[] plainText = aead.decrypt(cipherTextBytes, null);
+        return new String(plainText);
     }
     
     public List<Conta> listarElementos() throws SQLException {
@@ -48,11 +77,24 @@ public class TelaPrincipal extends javax.swing.JFrame {
             pst.setString(1, lblId.getText());
             rs = pst.executeQuery();
             while (rs.next()) {
-                Conta conta = new Conta(rs.getString(1), rs.getString(2),rs.getString(3),rs.getString(4),rs.getString(5),rs.getString(6));
+                
+                String nome = rs.getString(2);
+                String usuarioCriptografado = rs.getString(3);
+                String senhaCriptografada = rs.getString(4);
+                String email = rs.getString(5);
+                String descricao = rs.getString(6);
+                String idcli = rs.getString(7);
+                
+                
+                String usuario = descriptografar(usuarioCriptografado);
+                String senha = descriptografar(senhaCriptografada);
+                
+                Conta conta = new Conta(idcli, nome, usuario, senha, email, descricao);
                 elementos.add(conta);
             }
         }catch(Exception e){
             JOptionPane.showMessageDialog(null, e);
+            e.printStackTrace();
         }
         return elementos;
     }
@@ -262,9 +304,14 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        TelaAdicionar adicionar = new TelaAdicionar();
-        adicionar.setVisible(true);
-        adicionar.lblNomeUser.setText(lblNome.getText());
+        try {
+            TelaAdicionar adicionar = new TelaAdicionar();
+            adicionar.setVisible(true);
+            adicionar.lblNomeUser.setText(lblNome.getText());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Erro ao abrir janela");
+        }
+        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
