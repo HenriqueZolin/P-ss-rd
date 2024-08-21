@@ -8,7 +8,8 @@ Some Images:
 
 <h3>Login Screen</h3>
 <h4>Asks username ans password, has the function to send an email to you if you forget the password, after login a 2FA is sent to your email</h4>
-<img src="C:\Users\henri\OneDrive\Pictures\Screenshots\Captura de tela 2024-08-21 102722.png">
+<img src=https://github.com/user-attachments/assets/b3e672da-b55d-47f4-ac79-cebcf2d55db7>
+
 
 <h3>Register Screen</h3>
 <h4>This 2 PassWords, the first one is to enter the App and the other one is to view the accounts</h4>
