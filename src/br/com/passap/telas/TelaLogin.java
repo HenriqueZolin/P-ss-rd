@@ -10,9 +10,11 @@ import br.com.passapp.dao.ModuloConexao;
 import java.awt.Color;
 import java.awt.Toolkit;
 import java.io.*;
+import java.util.Random;
 import java.util.Properties;
 import java.util.logging.*;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.SimpleEmail;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
@@ -44,15 +46,18 @@ public class TelaLogin extends javax.swing.JFrame {
                 String hashedSenha = rs.getString(3);
                 
                 if (BCrypt.checkpw(txtSenha.getText(), hashedSenha)){
-                    TelaPrincipal telaPrincipal = new TelaPrincipal(txtLogin.getText());
-                    telaPrincipal.setVisible(true);
-                    this.dispose();
-                    conexao.close();
-                    if (rs != null) {
-                        rs.close();
+                    if(enviarAutenticacao()){
+                        TelaPrincipal telaPrincipal = new TelaPrincipal(txtLogin.getText());
+                        telaPrincipal.setVisible(true);
+                        this.dispose();
+                        conexao.close();
+                        if (rs != null) {
+                            rs.close();
+                        }
+                        if (pst != null)
+                            pst.close();
                     }
-                    if (pst != null)
-                        pst.close();
+                    
                 }else{
                     JOptionPane.showMessageDialog(null, "Usuaário e/ou senha incorreto(s)");
                 }
@@ -210,6 +215,81 @@ public class TelaLogin extends javax.swing.JFrame {
             Logger.getLogger(TelaLogin.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnEsqueciSenhaActionPerformed
+    
+    //autenticaçõ de dois fatores por email
+    private boolean enviarAutenticacao() throws IOException {
+        Random random = new Random();
+        
+        int token = random.nextInt(100000, 999999);
+        String sql = "select * from tbusuarios where login=?";
+            
+            StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+            encryptor.setPassword("chave1234");
+            
+            Properties props = new EncryptableProperties(encryptor);
+            
+            String meuemail = "";
+            String minhaSenha  = "";          
+            try {
+                props.load(new FileInputStream("src/br/com/passapp/dao/values.properties"));
+                meuemail = props.getProperty("email.username");
+                minhaSenha = props.getProperty("email.password");
+            } catch (FileNotFoundException e) {
+                JOptionPane.showMessageDialog(null, "Erro ao encontrar usuário");
+            }
+
+            System.setProperty("mail.smtp.ssl.protocols", "TLSv1.2");
+
+            SimpleEmail email = new SimpleEmail();
+            email.setHostName("smtp.gmail.com");
+            email.setSmtpPort(465);
+            email.setAuthenticator(new DefaultAuthenticator(meuemail, minhaSenha));
+            email.setSSLOnConnect(true);
+
+            try {
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, txtLogin.getText());
+                rs = pst.executeQuery();
+                if (rs.next()) {
+
+                    String destinatario = rs.getString(6);
+                    email.setFrom(meuemail);
+                    email.setSubject("Autenticação de usuário");
+                    email.setMsg("Seu token para entrar é: " + token);
+                    email.addTo(destinatario);
+
+                    email.send();
+
+                    JPasswordField passwordField = new JPasswordField();
+                    int option = JOptionPane.showConfirmDialog(
+                            null,
+                            passwordField,
+                            "Digite o token enviado no seu email para entrar:",
+                            JOptionPane.OK_CANCEL_OPTION,
+                            JOptionPane.PLAIN_MESSAGE
+                    );
+                    
+                    if (option == JOptionPane.OK_OPTION) {
+                        String senhaDigitada = new String(passwordField.getPassword());
+                        if (senhaDigitada.equals(Integer.toString(token))) {
+                            return true;
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Senha incorreta!");
+                            return false;
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Operação cancelada pelo usuário.");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Usuário não encontrado!");
+                }
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+                return false;
+            }
+            return false;
+    }
     
     private void enviarEmail() throws IOException{
         

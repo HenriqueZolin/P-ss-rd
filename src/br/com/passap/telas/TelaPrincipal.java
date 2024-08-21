@@ -83,7 +83,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 String senhaCriptografada = rs.getString(4);
                 String email = rs.getString(5);
                 String descricao = rs.getString(6);
-                String idcli = rs.getString(7);
+                String idcli = rs.getString(1);
                 
                 
                 String usuario = descriptografar(usuarioCriptografado);
@@ -209,6 +209,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         lblNome = new javax.swing.JLabel();
+        btnDeslogar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("P@ss**rd");
@@ -248,6 +249,14 @@ public class TelaPrincipal extends javax.swing.JFrame {
         lblNome.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         lblNome.setForeground(new java.awt.Color(255, 255, 255));
 
+        btnDeslogar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/passapp/icones/return.png"))); // NOI18N
+        btnDeslogar.setToolTipText("Deslogar");
+        btnDeslogar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeslogarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -258,10 +267,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(displayPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
+                            .addComponent(btnDeslogar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(lblId)
                         .addGap(258, 258, 258))
                     .addGroup(layout.createSequentialGroup()
@@ -291,10 +301,12 @@ public class TelaPrincipal extends javax.swing.JFrame {
                         .addComponent(lblId)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(displayPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(29, Short.MAX_VALUE))
+                        .addGap(0, 29, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton2)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnDeslogar, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())))
         );
 
@@ -318,6 +330,20 @@ public class TelaPrincipal extends javax.swing.JFrame {
         // TODO add your handling code here:
         atualizarDisplay();
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void btnDeslogarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeslogarActionPerformed
+        // TODO add your handling code here:
+        TelaLogin telalogin = new TelaLogin();
+        telalogin.setVisible(true);
+        try {
+            conexao.close();
+            rs.close();
+            pst.close();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+        this.dispose();
+    }//GEN-LAST:event_btnDeslogarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -355,6 +381,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnDeslogar;
     private javax.swing.JPanel displayPanel;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
